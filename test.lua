@@ -8,7 +8,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
-local distance = 8 -- Khoảng cách dịch chuyển (studs) - Có thể chỉnh nhỏ hơn nếu cần
+local distance = 20 -- Khoảng cách dịch chuyển (studs) - Có thể chỉnh nhỏ hơn nếu cần
 local speed = 300 -- Tốc độ di chuyển (studs/giây) - Làm nhanh để mượt
 local connection
 local noclipConnection
