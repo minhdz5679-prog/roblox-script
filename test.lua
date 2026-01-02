@@ -6,7 +6,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Tạo GUI
+-- Tạo GUI cho TELE
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ShortTeleportGUI"
 ScreenGui.Parent = playerGui
@@ -14,7 +14,7 @@ ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 120, 0, 60)  -- Thu nhỏ vì text "TELE" ngắn
+MainFrame.Size = UDim2.new(0, 120, 0, 60)
 MainFrame.Position = UDim2.new(0, 20, 0.5, -30)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
@@ -25,7 +25,7 @@ Corner.CornerRadius = UDim.new(0, 12)
 Corner.Parent = MainFrame
 
 local Stroke = Instance.new("UIStroke")
-Stroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ cho viền MainFrame
+Stroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ viền frame
 Stroke.Thickness = 2
 Stroke.Parent = MainFrame
 
@@ -33,8 +33,8 @@ local TeleButton = Instance.new("TextButton")
 TeleButton.Name = "TeleButton"
 TeleButton.Size = UDim2.new(1, -10, 1, -10)
 TeleButton.Position = UDim2.new(0, 5, 0, 5)
-TeleButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)  -- XANH DƯƠNG cho nền nút
-TeleButton.Text = "TELE"  -- Đổi thành "TELE" như yêu cầu
+TeleButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)  -- XANH DƯƠNG nền nút
+TeleButton.Text = "TELE"
 TeleButton.TextColor3 = Color3.new(1,1,1)
 TeleButton.TextScaled = true
 TeleButton.Font = Enum.Font.GothamBold
@@ -46,7 +46,7 @@ ButtonCorner.CornerRadius = UDim.new(0, 10)
 ButtonCorner.Parent = TeleButton
 
 local ButtonStroke = Instance.new("UIStroke")
-ButtonStroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ cho viền nút
+ButtonStroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ viền nút
 ButtonStroke.Thickness = 2
 ButtonStroke.Parent = TeleButton
 
@@ -76,14 +76,14 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- Logic Teleport - 16 STUDS
+-- Logic TELEPORT - 16 STUDS
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
-local distance = 16  -- Giữ 16 studs xa
+local distance = 20
 local speed = 300
-local connection
+local teleConnection
 
 local function setNoclip(state)
     for _, part in pairs(character:GetDescendants()) do
@@ -95,7 +95,7 @@ local function setNoclip(state)
 end
 
 local function shortTeleport()
-    if connection then return end
+    if teleConnection then return end
     
     local startCFrame = humanoidRootPart.CFrame
     local direction = humanoidRootPart.CFrame.LookVector
@@ -106,22 +106,22 @@ local function shortTeleport()
     local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = targetCFrame})
     
-    connection = RunService.Heartbeat:Connect(function()
+    teleConnection = RunService.Heartbeat:Connect(function()
         setNoclip(true)
     end)
     
     tween:Play()
     tween.Completed:Connect(function()
-        if connection then
-            connection:Disconnect()
-            connection = nil
+        if teleConnection then
+            teleConnection:Disconnect()
+            teleConnection = nil
         end
         setNoclip(false)
         print("TELE: +" .. distance .. " studs phía trước! 🔵🔴")
     end)
 end
 
--- Sự kiện nút + phím T
+-- Sự kiện TELE: Nút + Phím T
 TeleButton.MouseButton1Click:Connect(shortTeleport)
 TeleButton.TouchTap:Connect(shortTeleport)
 
@@ -132,14 +132,73 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Respawn handler
+-- Logic FLY ASCEND - Giữ SPACE bay lên tốc độ 10
+local ascendSpeed = 10
+local bodyVelocity = nil
+local isAscending = false
+
+local function startAscend()
+    if isAscending then return end
+    isAscending = true
+    
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.new(0, ascendSpeed, 0)
+    bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
+    bodyVelocity.Parent = humanoidRootPart
+    
+    -- Bật noclip cho fly (xuyên vật thể)
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+    
+    print("Ascend: BẬT - Bay lên tốc độ " .. ascendSpeed .. "! 🚀")
+end
+
+local function stopAscend()
+    if not isAscending then return end
+    isAscending = false
+    
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+    
+    -- Tắt noclip (trừ nếu đang tele, nhưng đơn giản hóa)
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = true
+        end
+    end
+    
+    print("Ascend: TẮT - Dừng bay lên.")
+end
+
+-- Detect giữ/thả SPACE cho FLY
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Space then
+        startAscend()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Space then
+        stopAscend()
+    end
+end)
+
+-- Respawn handler cho CẢ HAI
 player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
     humanoid = character:WaitForChild("Humanoid")
-    if connection then
-        connection:Disconnect()
-        connection = nil
+    if teleConnection then
+        teleConnection:Disconnect()
+        teleConnection = nil
     end
-    wait(0.5)
+    stopAscend()  -- Dừng fly nếu đang bay
+    wait(0.5)     -- Đợi load đầy đủ
 end)
