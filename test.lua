@@ -14,7 +14,7 @@ ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 140, 0, 60)  -- Lớn hơn tí để hiện "TELE 16"
+MainFrame.Size = UDim2.new(0, 120, 0, 60)  -- Thu nhỏ vì text "TELE" ngắn
 MainFrame.Position = UDim2.new(0, 20, 0.5, -30)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
@@ -25,7 +25,7 @@ Corner.CornerRadius = UDim.new(0, 12)
 Corner.Parent = MainFrame
 
 local Stroke = Instance.new("UIStroke")
-Stroke.Color = Color3.fromRGB(0, 255, 127)  -- Màu xanh lá cho "xa hơn"
+Stroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ cho viền MainFrame
 Stroke.Thickness = 2
 Stroke.Parent = MainFrame
 
@@ -33,8 +33,8 @@ local TeleButton = Instance.new("TextButton")
 TeleButton.Name = "TeleButton"
 TeleButton.Size = UDim2.new(1, -10, 1, -10)
 TeleButton.Position = UDim2.new(0, 5, 0, 5)
-TeleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
-TeleButton.Text = "TELE 16"  -- Hiện khoảng cách mới
+TeleButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)  -- XANH DƯƠNG cho nền nút
+TeleButton.Text = "TELE"  -- Đổi thành "TELE" như yêu cầu
 TeleButton.TextColor3 = Color3.new(1,1,1)
 TeleButton.TextScaled = true
 TeleButton.Font = Enum.Font.GothamBold
@@ -46,8 +46,8 @@ ButtonCorner.CornerRadius = UDim.new(0, 10)
 ButtonCorner.Parent = TeleButton
 
 local ButtonStroke = Instance.new("UIStroke")
-ButtonStroke.Color = Color3.new(1,1,1)
-ButtonStroke.Thickness = 1
+ButtonStroke.Color = Color3.fromRGB(255, 0, 0)  -- ĐỎ cho viền nút
+ButtonStroke.Thickness = 2
 ButtonStroke.Parent = TeleButton
 
 -- Draggable GUI
@@ -76,15 +76,14 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- Logic Teleport - TĂNG KHOẢNG CÁCH LÊN 16 STUDS!
+-- Logic Teleport - 16 STUDS
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
-local distance = 16  -- 🔥 TĂNG LÊN 16 STUDS (từ 8 → 16, xa gấp đôi!)
-local speed = 300    -- Tăng tốc độ để mượt với khoảng cách xa
+local distance = 16  -- Giữ 16 studs xa
+local speed = 300
 local connection
-local noclipConnection
 
 local function setNoclip(state)
     for _, part in pairs(character:GetDescendants()) do
@@ -96,7 +95,7 @@ local function setNoclip(state)
 end
 
 local function shortTeleport()
-    if connection then return end  -- Anti-spam
+    if connection then return end
     
     local startCFrame = humanoidRootPart.CFrame
     local direction = humanoidRootPart.CFrame.LookVector
@@ -118,7 +117,7 @@ local function shortTeleport()
             connection = nil
         end
         setNoclip(false)
-        print("Short Teleport: +" .. distance .. " studs phía trước! 🚀")
+        print("TELE: +" .. distance .. " studs phía trước! 🔵🔴")
     end)
 end
 
