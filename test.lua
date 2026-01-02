@@ -34,7 +34,7 @@ TeleButton.Name = "TeleButton"
 TeleButton.Size = UDim2.new(1, -10, 1, -10)
 TeleButton.Position = UDim2.new(0, 5, 0, 5)
 TeleButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)  -- XANH DƯƠNG nền nút
-TeleButton.Text = "TELE"
+TeleButton.Text = "TELE"  -- Giữ "TELE"
 TeleButton.TextColor3 = Color3.new(1,1,1)
 TeleButton.TextScaled = true
 TeleButton.Font = Enum.Font.GothamBold
@@ -76,13 +76,13 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- Logic TELEPORT - 16 STUDS
+-- Logic TELEPORT - 🔥 TĂNG LÊN 20 STUDS + SPEED 400 (SIÊU NHANH!)
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
-local distance = 20
-local speed = 300
+local distance = 20   -- 🔥 TĂNG 20 STUDS
+local speed = 400     -- 🔥 TĂNG SPEED 400 (nhanh hơn nữa!)
 local teleConnection
 
 local function setNoclip(state)
@@ -117,7 +117,7 @@ local function shortTeleport()
             teleConnection = nil
         end
         setNoclip(false)
-        print("TELE: +" .. distance .. " studs phía trước! 🔵🔴")
+        print("TELE: +" .. distance .. " studs phía trước (speed " .. speed .. ")! 🔵🔴⚡")
     end)
 end
 
@@ -132,8 +132,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Logic FLY ASCEND - Giữ SPACE bay lên tốc độ 10
-local ascendSpeed = 10
+-- Logic FLY ASCEND - 🔥 TĂNG 18 STUDS/GIÂY + WALKSPEED 40 KHI BAY!
+local ascendSpeed = 18  -- 🔥 TĂNG 18
+local walkSpeedFly = 40 -- 🔥 THÊM: Tốc độ di chuyển ngang 40 khi bay (gấp 2.5x bình thường)
+local defaultWalkSpeed = 16  -- Speed mặc định
 local bodyVelocity = nil
 local isAscending = false
 
@@ -141,41 +143,47 @@ local function startAscend()
     if isAscending then return end
     isAscending = true
     
+    -- Set WalkSpeed cao khi bay (di chuyển ngang nhanh!)
+    humanoid.WalkSpeed = walkSpeedFly
+    
     bodyVelocity = Instance.new("BodyVelocity")
     bodyVelocity.Velocity = Vector3.new(0, ascendSpeed, 0)
     bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
     bodyVelocity.Parent = humanoidRootPart
     
-    -- Bật noclip cho fly (xuyên vật thể)
+    -- Noclip cho fly
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = false
         end
     end
     
-    print("Ascend: BẬT - Bay lên tốc độ " .. ascendSpeed .. "! 🚀")
+    print("Ascend: BẬT - Bay lên " .. ascendSpeed .. " + WalkSpeed " .. walkSpeedFly .. "! 🚀💨")
 end
 
 local function stopAscend()
     if not isAscending then return end
     isAscending = false
     
+    -- Reset WalkSpeed về bình thường
+    humanoid.WalkSpeed = defaultWalkSpeed
+    
     if bodyVelocity then
         bodyVelocity:Destroy()
         bodyVelocity = nil
     end
     
-    -- Tắt noclip (trừ nếu đang tele, nhưng đơn giản hóa)
+    -- Tắt noclip
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = true
         end
     end
     
-    print("Ascend: TẮT - Dừng bay lên.")
+    print("Ascend: TẮT - Reset WalkSpeed " .. defaultWalkSpeed .. ".")
 end
 
--- Detect giữ/thả SPACE cho FLY
+-- Detect giữ/thả SPACE
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Space then
@@ -190,7 +198,7 @@ UserInputService.InputEnded:Connect(function(input, gameProcessed)
     end
 end)
 
--- Respawn handler cho CẢ HAI
+-- Respawn handler
 player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -199,6 +207,7 @@ player.CharacterAdded:Connect(function(newCharacter)
         teleConnection:Disconnect()
         teleConnection = nil
     end
-    stopAscend()  -- Dừng fly nếu đang bay
-    wait(0.5)     -- Đợi load đầy đủ
+    stopAscend()  -- Dừng & reset speed
+    humanoid.WalkSpeed = defaultWalkSpeed  -- Đảm bảo reset
+    wait(0.5)
 end)
