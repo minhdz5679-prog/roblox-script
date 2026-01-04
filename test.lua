@@ -34,7 +34,7 @@ TeleButton.Name = "TeleButton"
 TeleButton.Size = UDim2.new(1, -10, 1, -10)
 TeleButton.Position = UDim2.new(0, 5, 0, 5)
 TeleButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)  -- XANH DƯƠNG nền nút
-TeleButton.Text = "TELE"  -- Giữ "TELE"
+TeleButton.Text = "TELE"
 TeleButton.TextColor3 = Color3.new(1,1,1)
 TeleButton.TextScaled = true
 TeleButton.Font = Enum.Font.GothamBold
@@ -76,13 +76,13 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- Logic TELEPORT - 🔥 TĂNG LÊN 20 STUDS + SPEED 400 (SIÊU NHANH!)
+-- Logic TELEPORT - 🔥 TĂNG LÊN 60 STUDS + SPEED 600 (XA HƠN & SIÊU NHANH!)
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
-local distance = 20   -- 🔥 TĂNG 20 STUDS
-local speed = 400     -- 🔥 TĂNG SPEED 400 (nhanh hơn nữa!)
+local distance = 60   -- 🔥 TĂNG 60 STUDS (xa hơn!)
+local speed = 600     -- 🔥 TĂNG SPEED 600 (nhanh gấp đôi trước!)
 local teleConnection
 
 local function setNoclip(state)
@@ -132,10 +132,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Logic FLY ASCEND - 🔥 TĂNG 18 STUDS/GIÂY + WALKSPEED 40 KHI BAY!
-local ascendSpeed = 18  -- 🔥 TĂNG 18
-local walkSpeedFly = 40 -- 🔥 THÊM: Tốc độ di chuyển ngang 40 khi bay (gấp 2.5x bình thường)
-local defaultWalkSpeed = 16  -- Speed mặc định
+-- Logic FLY ASCEND - 🔥 ASCEND 60 + WALKSPEED 60 KHI BAY (BAY NGANG SIÊU NHANH!)
+local ascendSpeed = 60  -- 🔥 TĂNG 60 (bay lên nhanh hơn!)
+local walkSpeedFly = 60 -- 🔥 TĂNG 60 (bay ngang 60 speed!)
+local defaultWalkSpeed = 16
 local bodyVelocity = nil
 local isAscending = false
 
@@ -143,7 +143,6 @@ local function startAscend()
     if isAscending then return end
     isAscending = true
     
-    -- Set WalkSpeed cao khi bay (di chuyển ngang nhanh!)
     humanoid.WalkSpeed = walkSpeedFly
     
     bodyVelocity = Instance.new("BodyVelocity")
@@ -151,7 +150,6 @@ local function startAscend()
     bodyVelocity.MaxForce = Vector3.new(0, math.huge, 0)
     bodyVelocity.Parent = humanoidRootPart
     
-    -- Noclip cho fly
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = false
@@ -165,7 +163,6 @@ local function stopAscend()
     if not isAscending then return end
     isAscending = false
     
-    -- Reset WalkSpeed về bình thường
     humanoid.WalkSpeed = defaultWalkSpeed
     
     if bodyVelocity then
@@ -173,7 +170,6 @@ local function stopAscend()
         bodyVelocity = nil
     end
     
-    -- Tắt noclip
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = true
@@ -207,7 +203,7 @@ player.CharacterAdded:Connect(function(newCharacter)
         teleConnection:Disconnect()
         teleConnection = nil
     end
-    stopAscend()  -- Dừng & reset speed
-    humanoid.WalkSpeed = defaultWalkSpeed  -- Đảm bảo reset
+    stopAscend()
+    humanoid.WalkSpeed = defaultWalkSpeed
     wait(0.5)
 end)
